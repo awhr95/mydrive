@@ -23,8 +23,10 @@ bash
 Copy
 Edit
 git clone https://github.com/your-username/mydrive.git
-cd mydrive 2. Install Dependencies
-Install the dependencies for both the frontend and backend:
+cd mydrive
+
+2. Install Dependencies
+   Install the dependencies for both the frontend and backend:
 
 For Frontend:
 bash
@@ -37,16 +39,20 @@ bash
 Copy
 Edit
 cd backend
-npm install 3. Set Up Environment Variables
-For the backend, create a .env file in the backend directory and define necessary variables (e.g., PORT).
+npm install
+
+3. Set Up Environment Variables
+   For the backend, create a .env file in the backend directory and define necessary variables (e.g., PORT).
 
 Example .env for backend:
 
 makefile
 Copy
 Edit
-PORT=5000 4. Run the Project Locally
-Open two terminal windows (or use a tool like concurrently):
+PORT=5000
+
+4. Run the Project Locally
+   Open two terminal windows (or use a tool like concurrently):
 
 Frontend:
 bash
