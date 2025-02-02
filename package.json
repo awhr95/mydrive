@@ -6,6 +6,8 @@
     "start": "concurrently \"npm run start --prefix backend\" \"npm run dev --prefix client\""
   },
   "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^7.1.3"
   }
 }
