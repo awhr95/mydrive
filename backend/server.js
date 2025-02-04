@@ -4,10 +4,17 @@ const cors = require("cors");
 const fs = require("fs");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5002;
 const USER_FILE = "users.json";
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Your frontend URL
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true, // If sending cookies or authentication headers
+  })
+);
+app.options("*", cors());
 app.use(express.json());
 
 app.post("/users/login", (req, res) => {
