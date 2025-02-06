@@ -17,20 +17,8 @@ app.use(
 app.options("*", cors());
 app.use(express.json());
 
-app.post("/users/login", (req, res) => {
-  const { email, password } = req.body;
-
-  const userData = { email, password };
-  fs.readFile(USER_FILE, "utf8", (err, data) => {
-    if (err) return res.status(500).send("Error reading data");
-    const users = data ? JSON.parse(data) : [];
-    users.push(userData);
-    fs.writeFile(USER_FILE, JSON.stringify(users, null, 2), (err) => {
-      if (err) return res.status(500).send("Error saving data");
-      res.status(200).send("User signed up");
-    });
-  });
-});
+const userRoutes = require("./routes/userRoutes");
+app.use("/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend is running");
