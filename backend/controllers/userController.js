@@ -1,19 +1,14 @@
-const fs = require("fs");
-const USER_FILE = "users.json";
+const db = require("../db");
 
-const loginUser = (req, res) => {
+const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  const userData = { email, password };
-  fs.readFile(USER_FILE, "utf8", (err, data) => {
-    if (err) return res.status(500).send("Error reading data");
-    const users = data ? JSON.parse(data) : [];
-    users.push(userData);
-    fs.writeFile(USER_FILE, JSON.stringify(users, null, 2), (err) => {
-      if (err) return res.status(500).send("Error saving data");
-      res.status(200).send("User signed up");
-    });
-  });
+  try {
+    await db("users").insert({ email, password });
+    res.status(200).send("User created successfully");
+  } catch (error) {
+    res.status(500).send("Error creating user");
+  }
 };
 
 module.exports = { loginUser };
