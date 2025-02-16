@@ -12,4 +12,3 @@ const loginUser = async (req, res) => {
 };
 
 module.exports = { loginUser };
-// In the above code, we have a loginUser function that reads the users.json file, parses the data, and appends the new user data to the file. The loginUser function is exported to be used in the userRoutes.js file.

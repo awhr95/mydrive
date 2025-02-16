@@ -16,6 +16,9 @@ app.options("*", cors());
 app.use(express.json());
 
 const userRoutes = require("./routes/userRoutes");
+const fileRoutes = require("./routes/fileRoutes");
+
+app.use("/files", fileRoutes);
 app.use("/users", userRoutes);
 
 app.get("/", (req, res) => {
