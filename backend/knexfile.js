@@ -11,7 +11,8 @@ module.exports = {
       user: process.env.DB_LOCAL_USER,
       password: process.env.DB_LOCAL_PASSWORD,
       database: process.env.DB_LOCAL_DBNAME,
-      port: process.env.PORT,
+      port: process.env.DB_PORT || 3306,
+      connectTimeout: 60000, // Increase the connection timeout to 60 seconds
     },
   },
 
@@ -22,7 +23,8 @@ module.exports = {
       user: process.env.DB_LOCAL_USER,
       password: process.env.DB_LOCAL_PASSWORD,
       database: process.env.DB_LOCAL_DBNAME,
-      port: process.env.PORT,
+      port: process.env.DB_PORT || 3306,
+      connectTimeout: 60000, // Increase the connection timeout to 60 seconds
     },
     pool: {
       min: 2,

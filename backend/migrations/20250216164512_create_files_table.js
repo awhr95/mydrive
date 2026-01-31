@@ -3,12 +3,11 @@
  * @returns { Promise<void> }
  */
 exports.up = async function (knex) {
-  const exists = await knex.schema.hasTable("users");
+  const exists = await knex.schema.hasTable("files");
   if (!exists) {
-    return knex.schema.createTable("users", function (table) {
+    return knex.schema.createTable("files", (table) => {
       table.increments("id").primary();
-      table.string("email").notNullable().unique();
-      table.string("password").notNullable();
+      table.string("filename").notNullable();
       table.timestamps(true, true);
     });
   }
@@ -19,5 +18,5 @@ exports.up = async function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
-  return knex.schema.dropTable("users");
+  return knex.schema.dropTable("files");
 };
