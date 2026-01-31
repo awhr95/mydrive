@@ -1,9 +1,13 @@
-import "FileUpload.css";
+import "./FileUpload.scss";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../../context/AuthContext";
 
 const FileUpload = () => {
   const [file, setFile] = useState(null);
+  const { token, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleFileChange = async (event) => {
     setFile(event.target.files[0]);
@@ -20,19 +24,32 @@ const FileUpload = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
       console.log("Uploaded:", response.data);
     } catch (error) {
+      if (error.response?.status === 401) {
+        logout();
+        navigate("/login");
+        return;
+      }
       console.log("Upload failed:", error);
     }
   };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <div className="file-upload">
       <h1>File Upload</h1>
+      <button onClick={handleLogout}>Logout</button>
       <input type="file" onChange={handleFileChange} />
-      <button onClick={handleUpload}></button>
+      <button onClick={handleUpload}>Upload</button>
     </div>
   );
 };
