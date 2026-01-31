@@ -1,0 +1,46 @@
+@use "styles/variables" as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: $font-family;
+  font-size: 16px;
+  line-height: 1.5;
+  color: $gray-800;
+  background-color: $gray-50;
+}
+
+a {
+  color: $primary;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+button {
+  cursor: pointer;
+  font-family: $font-family;
+}
+
+input {
+  font-family: $font-family;
+}
+
+.container {
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 0 24px;
+}

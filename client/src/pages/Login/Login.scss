@@ -1,0 +1,144 @@
+@use "../../styles/variables" as *;
+
+.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $primary-light;
+  padding: 24px;
+}
+
+.login__card {
+  background: $white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.login__heading {
+  font-size: 24px;
+  font-weight: 700;
+  color: $gray-900;
+  margin-bottom: 4px;
+}
+
+.login__subheading {
+  font-size: 14px;
+  color: $gray-500;
+  margin-bottom: 28px;
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $gray-700;
+  margin-bottom: 6px;
+}
+
+.login__label-icon {
+  font-size: 15px;
+  color: $gray-400;
+}
+
+.login__input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid $gray-200;
+  border-radius: $radius-sm;
+  font-size: 14px;
+  color: $gray-800;
+  background: $white;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+  margin-bottom: 16px;
+
+  &::placeholder {
+    color: $gray-400;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px rgba($primary, 0.12);
+  }
+}
+
+.login__password-wrapper {
+  position: relative;
+
+  .login__input {
+    padding-right: 40px;
+    margin-bottom: 16px;
+  }
+}
+
+.login__password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  color: $gray-400;
+  font-size: 17px;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $gray-600;
+  }
+}
+
+.login__submit {
+  width: 100%;
+  padding: 10px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 4px;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $primary-dark;
+  }
+}
+
+.login__error {
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: $red-light;
+  color: $red;
+  border-radius: $radius-sm;
+  font-size: 14px;
+}
+
+.login__toggle {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: $gray-500;
+
+  a {
+    color: $primary;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

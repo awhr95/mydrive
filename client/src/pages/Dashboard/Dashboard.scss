@@ -1,0 +1,162 @@
+@use "../../styles/variables" as *;
+
+.dashboard {
+  padding: 32px 0;
+}
+
+.dashboard__welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.dashboard__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: $gray-900;
+}
+
+.dashboard__subtitle {
+  font-size: 14px;
+  color: $gray-500;
+  margin-top: 2px;
+}
+
+.dashboard__upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: $primary;
+  color: $white;
+  border-radius: $radius-sm;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $primary-dark;
+    text-decoration: none;
+  }
+}
+
+// Empty state
+.dashboard__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-lg;
+}
+
+.dashboard__empty-icon {
+  font-size: 48px;
+  color: $gray-300;
+  margin-bottom: 16px;
+}
+
+.dashboard__empty-text {
+  font-size: 16px;
+  color: $gray-500;
+  margin-bottom: 12px;
+}
+
+.dashboard__empty-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: $primary;
+}
+
+// File grid
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.dashboard__card {
+  display: flex;
+  flex-direction: column;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-md;
+  padding: 20px;
+  transition: box-shadow $transition-base;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+.dashboard__card-icon {
+  font-size: 24px;
+  color: $primary;
+  margin-bottom: 12px;
+}
+
+.dashboard__card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.dashboard__card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: $gray-800;
+  word-break: break-all;
+}
+
+.dashboard__card-date {
+  font-size: 13px;
+  color: $gray-400;
+}
+
+.dashboard__card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.dashboard__btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: $white;
+  color: $primary;
+  border: 1px solid $primary;
+  border-radius: $radius-sm;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $primary-light;
+  }
+}
+
+.dashboard__btn-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: none;
+  color: $red;
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $red-light;
+    border-color: $red;
+  }
+}
