@@ -1,8 +1,9 @@
 import "./Dashboard.scss";
-import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
+import UploadModal from "../../components/UploadModal";
 import {
   FiUploadCloud,
   FiDownload,
@@ -29,8 +30,24 @@ const getFileIcon = (filename) => {
   return <FiFile />;
 };
 
+const getFileType = (filename) => {
+  const ext = filename.split(".").pop();
+  return ext ? ext.toUpperCase() : "FILE";
+};
+
+const formatDate = (dateStr) => {
+  return new Date(dateStr).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
 const Dashboard = () => {
   const [files, setFiles] = useState([]);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [flipUp, setFlipUp] = useState(false);
+  const uploadWrapperRef = useRef(null);
   const { token, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -39,25 +56,46 @@ const Dashboard = () => {
     navigate("/login");
   };
 
-  useEffect(() => {
-    const fetchFiles = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/files`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setFiles(response.data);
-      } catch (error) {
-        if (error.response?.status === 401) {
-          handleAuthError();
+  const fetchFiles = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/files`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
+      );
+      setFiles(response.data);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        handleAuthError();
+      }
+    }
+  }, [token]);
+
+  useEffect(() => {
+    fetchFiles();
+  }, [fetchFiles]);
+
+  useEffect(() => {
+    if (!showUploadModal) return;
+    const handleClickOutside = (e) => {
+      if (
+        uploadWrapperRef.current &&
+        !uploadWrapperRef.current.contains(e.target)
+      ) {
+        setShowUploadModal(false);
       }
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showUploadModal]);
 
-    fetchFiles();
-  }, []);
+  useEffect(() => {
+    if (showUploadModal && uploadWrapperRef.current) {
+      const rect = uploadWrapperRef.current.getBoundingClientRect();
+      setFlipUp(window.innerHeight - rect.bottom < 400);
+    }
+  }, [showUploadModal]);
 
   const handleDownload = async (filename) => {
     try {
@@ -103,51 +141,82 @@ const Dashboard = () => {
             {files.length} {files.length === 1 ? "file" : "files"} stored
           </p>
         </div>
-        <Link to="/fileupload" className="dashboard__upload-btn">
-          <FiUploadCloud />
-          Upload File
-        </Link>
+        <div className="dashboard__upload-wrapper" ref={uploadWrapperRef}>
+          <button
+            className="dashboard__upload-btn"
+            onClick={() => setShowUploadModal((prev) => !prev)}
+          >
+            <FiUploadCloud />
+            Upload File
+          </button>
+          <UploadModal
+            isOpen={showUploadModal}
+            onClose={() => setShowUploadModal(false)}
+            onUploadSuccess={fetchFiles}
+            flipUp={flipUp}
+          />
+        </div>
       </div>
 
       {files.length === 0 ? (
         <div className="dashboard__empty">
           <FiFolder className="dashboard__empty-icon" />
           <p className="dashboard__empty-text">No files uploaded yet</p>
-          <Link to="/fileupload" className="dashboard__empty-link">
+          <button
+            className="dashboard__empty-link"
+            onClick={() => setShowUploadModal(true)}
+          >
             Upload your first file
-          </Link>
+          </button>
         </div>
       ) : (
-        <div className="dashboard__grid">
+        <div className="dashboard__table">
+          <div className="dashboard__table-header">
+            <span className="dashboard__col-icon" />
+            <span className="dashboard__col-name">Name</span>
+            <span className="dashboard__col-type">Type</span>
+            <span className="dashboard__col-size">Size</span>
+            <span className="dashboard__col-date">Date</span>
+            <span className="dashboard__col-actions">Actions</span>
+          </div>
           {files.map((file) => (
-            <div key={file.id} className="dashboard__card">
-              <div className="dashboard__card-icon">{getFileIcon(file.filename)}</div>
-              <div className="dashboard__card-info">
-                <span className="dashboard__card-name">{file.filename}</span>
-                <span className="dashboard__card-date">
-                  {new Date(file.created_at).toLocaleDateString()}
+            <div key={file.id} className="dashboard__table-row">
+              <span className="dashboard__col-icon dashboard__file-icon">
+                {getFileIcon(file.filename)}
+              </span>
+              <span className="dashboard__col-name dashboard__file-name">
+                {file.filename}
+              </span>
+              <span className="dashboard__col-type">
+                <span className="dashboard__type-badge">
+                  {getFileType(file.filename)}
                 </span>
-              </div>
-              <div className="dashboard__card-actions">
+              </span>
+              <span className="dashboard__col-size">&mdash;</span>
+              <span className="dashboard__col-date">
+                {formatDate(file.created_at)}
+              </span>
+              <span className="dashboard__col-actions">
                 <button
-                  className="dashboard__btn-download"
+                  className="dashboard__action-btn dashboard__action-btn--download"
                   onClick={() => handleDownload(file.filename)}
+                  title="Download"
                 >
                   <FiDownload />
-                  Download
                 </button>
                 <button
-                  className="dashboard__btn-delete"
+                  className="dashboard__action-btn dashboard__action-btn--delete"
                   onClick={() => handleDelete(file.id)}
+                  title="Delete"
                 >
                   <FiTrash2 />
-                  Delete
                 </button>
-              </div>
+              </span>
             </div>
           ))}
         </div>
       )}
+
     </div>
   );
 };
