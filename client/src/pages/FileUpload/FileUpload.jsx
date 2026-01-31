@@ -6,19 +6,28 @@ import { useAuth } from "../../context/AuthContext";
 
 const FileUpload = () => {
   const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
   const { token, logout } = useAuth();
   const navigate = useNavigate();
 
-  const handleFileChange = async (event) => {
+  const handleFileChange = (event) => {
     setFile(event.target.files[0]);
+    setMessage("");
   };
 
   const handleUpload = async () => {
+    if (!file) {
+      setMessage("Please select a file first.");
+      setIsError(true);
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_URL}/files/upload`,
         formData,
         {
@@ -28,28 +37,30 @@ const FileUpload = () => {
           },
         }
       );
-      console.log("Uploaded:", response.data);
+      setMessage("File uploaded successfully.");
+      setIsError(false);
+      setFile(null);
     } catch (error) {
       if (error.response?.status === 401) {
         logout();
         navigate("/login");
         return;
       }
-      console.log("Upload failed:", error);
+      setMessage("Upload failed. Please try again.");
+      setIsError(true);
     }
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
   };
 
   return (
     <div className="file-upload">
       <h1>File Upload</h1>
-      <button onClick={handleLogout}>Logout</button>
       <input type="file" onChange={handleFileChange} />
       <button onClick={handleUpload}>Upload</button>
+      {message && (
+        <p className={isError ? "file-upload__error" : "file-upload__success"}>
+          {message}
+        </p>
+      )}
     </div>
   );
 };

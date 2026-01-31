@@ -31,7 +31,7 @@ const Login = () => {
         { email, password }
       );
       login(response.data.token);
-      navigate("/fileupload");
+      navigate("/");
     } catch (error) {
       const message =
         error.response?.data?.error || "Something went wrong. Try again.";

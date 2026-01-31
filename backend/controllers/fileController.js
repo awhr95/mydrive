@@ -37,10 +37,43 @@ const downloadFile = async (req, res) => {
     if (!file) {
       return res.status(404).send("File not found");
     }
-    res.status(200).send(file);
+    const filePath = path.join(uploadDir, file.filename);
+    res.download(filePath, file.filename);
   } catch (error) {
+    console.error("Error downloading file:", error);
     res.status(500).send("Error downloading file");
   }
 };
 
-module.exports = { uploadFile, downloadFile, upload };
+const getFiles = async (req, res) => {
+  try {
+    const files = await db("files")
+      .select("id", "filename", "created_at")
+      .orderBy("created_at", "desc");
+    res.status(200).json(files);
+  } catch (error) {
+    console.error("Error fetching files:", error);
+    res.status(500).send("Error fetching files");
+  }
+};
+
+const deleteFile = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const file = await db("files").where({ id }).first();
+    if (!file) {
+      return res.status(404).send("File not found");
+    }
+
+    const filePath = path.join(uploadDir, file.filename);
+    await fs.promises.unlink(filePath).catch(() => {});
+    await db("files").where({ id }).del();
+    res.status(200).send("File deleted successfully");
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    res.status(500).send("Error deleting file");
+  }
+};
+
+module.exports = { uploadFile, downloadFile, getFiles, deleteFile, upload };
