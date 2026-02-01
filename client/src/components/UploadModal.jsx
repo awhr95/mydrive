@@ -4,7 +4,10 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { FiUploadCloud, FiX } from "react-icons/fi";
 
-const UploadModal = ({ isOpen, onClose, onUploadSuccess, flipUp }) => {
+const maxSizeMB = parseInt(import.meta.env.VITE_MAX_FILE_SIZE_MB, 10) || 50;
+const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+const UploadModal = ({ isOpen, onClose, onUploadSuccess, flipUp, currentFolderId }) => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
@@ -14,7 +17,15 @@ const UploadModal = ({ isOpen, onClose, onUploadSuccess, flipUp }) => {
   if (!isOpen) return null;
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selected = e.target.files[0];
+    if (selected && selected.size > maxSizeBytes) {
+      setMessage(`File too large. Maximum size is ${maxSizeMB}MB.`);
+      setIsError(true);
+      setFile(null);
+      e.target.value = "";
+      return;
+    }
+    setFile(selected);
     setMessage("");
   };
 
@@ -27,6 +38,9 @@ const UploadModal = ({ isOpen, onClose, onUploadSuccess, flipUp }) => {
 
     const formData = new FormData();
     formData.append("file", file);
+    if (currentFolderId) {
+      formData.append("parent_id", currentFolderId);
+    }
     setUploading(true);
 
     try {
@@ -48,8 +62,9 @@ const UploadModal = ({ isOpen, onClose, onUploadSuccess, flipUp }) => {
         onUploadSuccess();
         onClose();
       }, 1500);
-    } catch {
-      setMessage("Upload failed. Please try again.");
+    } catch (err) {
+      const serverMsg = err.response?.data?.error;
+      setMessage(serverMsg || "Upload failed. Please try again.");
       setIsError(true);
     } finally {
       setUploading(false);
@@ -71,7 +86,9 @@ const UploadModal = ({ isOpen, onClose, onUploadSuccess, flipUp }) => {
           {file ? file.name : "Click or drag files here"}
         </span>
         <span className="upload-popover__dropzone-hint">
-          {file ? `${(file.size / 1024).toFixed(1)} KB` : "Any file type"}
+          {file
+            ? `${(file.size / 1024).toFixed(1)} KB`
+            : `Any file type, max ${maxSizeMB}MB`}
         </span>
         <input
           id="popover-file-input"
