@@ -17,6 +17,8 @@ import {
   FiPlus,
   FiChevronRight,
   FiEdit2,
+  FiCheck,
+  FiX,
 } from "react-icons/fi";
 
 const getDisplayName = (file) => file.display_name || file.filename;
@@ -370,17 +372,32 @@ const Dashboard = () => {
                 </span>
                 <span className="dashboard__col-name dashboard__file-name">
                   {renamingId === file.id ? (
-                    <input
-                      className="dashboard__rename-input"
-                      value={renameValue}
-                      onChange={(e) => setRenameValue(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleRename(file.id);
-                        if (e.key === "Escape") setRenamingId(null);
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      autoFocus
-                    />
+                    <span className="dashboard__rename-row" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        className="dashboard__rename-input"
+                        value={renameValue}
+                        onChange={(e) => setRenameValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleRename(file.id);
+                          if (e.key === "Escape") setRenamingId(null);
+                        }}
+                        autoFocus
+                      />
+                      <button
+                        className="dashboard__rename-save"
+                        onClick={() => handleRename(file.id)}
+                        title="Save"
+                      >
+                        <FiCheck />
+                      </button>
+                      <button
+                        className="dashboard__rename-cancel"
+                        onClick={() => setRenamingId(null)}
+                        title="Cancel"
+                      >
+                        <FiX />
+                      </button>
+                    </span>
                   ) : (
                     file.filename
                   )}
@@ -422,16 +439,32 @@ const Dashboard = () => {
                 </span>
                 <span className="dashboard__col-name dashboard__file-name">
                   {renamingId === file.id ? (
-                    <input
-                      className="dashboard__rename-input"
-                      value={renameValue}
-                      onChange={(e) => setRenameValue(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleRename(file.id);
-                        if (e.key === "Escape") setRenamingId(null);
-                      }}
-                      autoFocus
-                    />
+                    <span className="dashboard__rename-row">
+                      <input
+                        className="dashboard__rename-input"
+                        value={renameValue}
+                        onChange={(e) => setRenameValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleRename(file.id);
+                          if (e.key === "Escape") setRenamingId(null);
+                        }}
+                        autoFocus
+                      />
+                      <button
+                        className="dashboard__rename-save"
+                        onClick={() => handleRename(file.id)}
+                        title="Save"
+                      >
+                        <FiCheck />
+                      </button>
+                      <button
+                        className="dashboard__rename-cancel"
+                        onClick={() => setRenamingId(null)}
+                        title="Cancel"
+                      >
+                        <FiX />
+                      </button>
+                    </span>
                   ) : (
                     getDisplayName(file)
                   )}
