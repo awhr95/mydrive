@@ -8,9 +8,9 @@ const PORT = process.env.PORT || 5002;
 app.use(
   cors({
     origin: "http://localhost:5173", // Your frontend URL
-    methods: "GET,POST,PUT,DELETE",
+    methods: "GET,POST,PUT,DELETE,PATCH",
     credentials: true, // If sending cookies or authentication headers
-  })
+  }),
 );
 app.options("*", cors());
 app.use(express.json());

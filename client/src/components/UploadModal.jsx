@@ -2,7 +2,7 @@ import "./UploadModal.scss";
 import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import { FiUploadCloud, FiX } from "react-icons/fi";
+import { FiUploadCloud, FiX, FiFile } from "react-icons/fi";
 
 const maxSizeMB = parseInt(import.meta.env.VITE_MAX_FILE_SIZE_MB, 10) || 50;
 const maxSizeBytes = maxSizeMB * 1024 * 1024;
@@ -83,12 +83,10 @@ const UploadModal = ({ isOpen, onClose, onUploadSuccess, flipUp, currentFolderId
       <label className="upload-popover__dropzone" htmlFor="popover-file-input">
         <FiUploadCloud className="upload-popover__dropzone-icon" />
         <span className="upload-popover__dropzone-text">
-          {file ? file.name : "Click or drag files here"}
+          {file ? "Click to change file" : "Click or drag files here"}
         </span>
         <span className="upload-popover__dropzone-hint">
-          {file
-            ? `${(file.size / 1024).toFixed(1)} KB`
-            : `Any file type, max ${maxSizeMB}MB`}
+          {`Any file type, max ${maxSizeMB}MB`}
         </span>
         <input
           id="popover-file-input"
@@ -98,14 +96,35 @@ const UploadModal = ({ isOpen, onClose, onUploadSuccess, flipUp, currentFolderId
         />
       </label>
 
-      <button
-        className="upload-popover__upload-btn"
-        onClick={handleUpload}
-        disabled={uploading}
-      >
-        <FiUploadCloud />
-        {uploading ? "Uploading..." : "Upload"}
-      </button>
+      {file && (
+        <div className="upload-popover__file-info">
+          <FiFile className="upload-popover__file-info-icon" />
+          <span className="upload-popover__file-info-name">{file.name}</span>
+          <span className="upload-popover__file-info-size">
+            {file.size < 1024 * 1024
+              ? `${(file.size / 1024).toFixed(1)} KB`
+              : `${(file.size / (1024 * 1024)).toFixed(1)} MB`}
+          </span>
+          <button
+            className="upload-popover__file-info-remove"
+            onClick={() => { setFile(null); setMessage(""); }}
+            title="Remove"
+          >
+            <FiX />
+          </button>
+        </div>
+      )}
+
+      {file && (
+        <button
+          className="upload-popover__upload-btn"
+          onClick={handleUpload}
+          disabled={uploading}
+        >
+          <FiUploadCloud />
+          {uploading ? "Uploading..." : "Upload"}
+        </button>
+      )}
 
       {message && (
         <p
