@@ -1,0 +1,183 @@
+@use "../styles/variables" as *;
+
+.upload-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 360px;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-md;
+  box-shadow: $shadow-md;
+  padding: 24px;
+  z-index: 150;
+
+  &--flip {
+    top: auto;
+    bottom: calc(100% + 8px);
+  }
+}
+
+.upload-popover__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: $gray-400;
+  cursor: pointer;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $gray-700;
+  }
+}
+
+.upload-popover__heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: $gray-900;
+  margin-bottom: 20px;
+}
+
+.upload-popover__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 20px;
+  border: 2px dashed $gray-300;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: border-color $transition-fast, background $transition-fast;
+
+  &:hover {
+    border-color: $primary;
+    background: $primary-light;
+  }
+}
+
+.upload-popover__dropzone-icon {
+  font-size: 32px;
+  color: $primary;
+}
+
+.upload-popover__dropzone-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: $gray-700;
+}
+
+.upload-popover__dropzone-hint {
+  font-size: 12px;
+  color: $gray-400;
+}
+
+.upload-popover__input {
+  display: none;
+}
+
+// Selected file info bar
+.upload-popover__file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: $gray-50;
+  border: 1px solid $gray-200;
+  border-radius: $radius-sm;
+}
+
+.upload-popover__file-info-icon {
+  font-size: 16px;
+  color: $primary;
+  flex-shrink: 0;
+}
+
+.upload-popover__file-info-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: $gray-800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upload-popover__file-info-size {
+  font-size: 12px;
+  color: $gray-400;
+  flex-shrink: 0;
+}
+
+.upload-popover__file-info-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: none;
+  border: none;
+  border-radius: $radius-sm;
+  color: $gray-400;
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all $transition-fast;
+
+  &:hover {
+    color: $red;
+    background: $red-light;
+  }
+}
+
+.upload-popover__upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  margin-top: 16px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $primary-dark;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.upload-popover__success {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: $green-light;
+  color: $green;
+  border-radius: $radius-sm;
+  font-size: 13px;
+  text-align: center;
+}
+
+.upload-popover__error {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: $red-light;
+  color: $red;
+  border-radius: $radius-sm;
+  font-size: 13px;
+  text-align: center;
+}

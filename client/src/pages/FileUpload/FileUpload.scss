@@ -1,0 +1,116 @@
+@use "../../styles/variables" as *;
+
+.file-upload {
+  padding: 32px 0;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.file-upload__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $gray-500;
+  margin-bottom: 20px;
+
+  &:hover {
+    color: $primary;
+    text-decoration: none;
+  }
+}
+
+.file-upload__card {
+  background: $white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  border: 1px solid $gray-200;
+  padding: 32px;
+}
+
+.file-upload__heading {
+  font-size: 22px;
+  font-weight: 700;
+  color: $gray-900;
+  margin-bottom: 24px;
+}
+
+.file-upload__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 40px 24px;
+  border: 2px dashed $gray-300;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: border-color $transition-fast, background $transition-fast;
+
+  &:hover {
+    border-color: $primary;
+    background: $primary-light;
+  }
+}
+
+.file-upload__dropzone-icon {
+  font-size: 36px;
+  color: $primary;
+}
+
+.file-upload__dropzone-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: $gray-700;
+}
+
+.file-upload__dropzone-hint {
+  font-size: 13px;
+  color: $gray-400;
+}
+
+.file-upload__input {
+  display: none;
+}
+
+.file-upload__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  margin-top: 20px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $primary-dark;
+  }
+}
+
+.file-upload__success {
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: $green-light;
+  color: $green;
+  border-radius: $radius-sm;
+  font-size: 14px;
+  text-align: center;
+}
+
+.file-upload__error {
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: $red-light;
+  color: $red;
+  border-radius: $radius-sm;
+  font-size: 14px;
+  text-align: center;
+}
