@@ -1,0 +1,62 @@
+@use "../../styles/variables" as *;
+
+.dashboard__breadcrumb {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.dashboard__breadcrumb-segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.dashboard__breadcrumb-item {
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $primary;
+  cursor: pointer;
+  border-radius: $radius-sm;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $primary-light;
+  }
+
+  &:last-child {
+    color: $gray-500;
+    cursor: default;
+
+    &:hover {
+      background: none;
+    }
+  }
+}
+
+.dashboard__breadcrumb-sep {
+  color: $gray-400;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+@media (max-width: #{$bp-mobile - 1}) {
+  .dashboard__breadcrumb {
+    font-size: 13px;
+    gap: 0;
+  }
+
+  .dashboard__breadcrumb-item {
+    font-size: 13px;
+    padding: 6px 8px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}

@@ -1,0 +1,31 @@
+@use "../../styles/variables" as *;
+
+.dashboard__table-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid $gray-100;
+  transition: background $transition-fast;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: $gray-50;
+  }
+
+  &:nth-child(even) {
+    background: $primary-light;
+
+    &:hover {
+      background: $primary-50;
+    }
+  }
+}
+
+@media (max-width: #{$bp-mobile - 1}) {
+  .dashboard__table-row {
+    padding: 12px 14px;
+  }
+}

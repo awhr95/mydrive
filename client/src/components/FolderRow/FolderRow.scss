@@ -1,0 +1,9 @@
+@use "../../styles/variables" as *;
+
+.dashboard__table-row--folder {
+  cursor: pointer;
+
+  .dashboard__file-icon {
+    color: #f59e0b;
+  }
+}

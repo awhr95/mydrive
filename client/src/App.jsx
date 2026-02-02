@@ -3,8 +3,8 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import FileUpload from "./pages/FileUpload/FileUpload";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import Layout from "./components/Layout/Layout";
 
 function App() {
   return (

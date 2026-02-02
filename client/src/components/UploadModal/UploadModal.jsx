@@ -1,7 +1,7 @@
 import "./UploadModal.scss";
 import { useState } from "react";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { FiUploadCloud, FiX, FiFile } from "react-icons/fi";
 
 const maxSizeMB = parseInt(import.meta.env.VITE_MAX_FILE_SIZE_MB, 10) || 50;

@@ -1,0 +1,84 @@
+@use "../../styles/variables" as *;
+
+.dashboard__new-folder-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-sm;
+}
+
+.dashboard__new-folder-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid $gray-300;
+  border-radius: $radius-sm;
+  font-size: 14px;
+  outline: none;
+  transition: border-color $transition-fast;
+
+  &:focus {
+    border-color: $primary;
+  }
+}
+
+.dashboard__new-folder-submit {
+  padding: 8px 16px;
+  background: $primary;
+  color: $white;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $primary-dark;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.dashboard__new-folder-cancel {
+  padding: 8px 16px;
+  background: $white;
+  color: $gray-600;
+  border: 1px solid $gray-300;
+  border-radius: $radius-sm;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $gray-50;
+  }
+}
+
+@media (max-width: #{$bp-mobile - 1}) {
+  .dashboard__new-folder-form {
+    flex-wrap: wrap;
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .dashboard__new-folder-input {
+    flex-basis: 100%;
+    order: 1;
+  }
+
+  .dashboard__new-folder-submit,
+  .dashboard__new-folder-cancel {
+    flex: 1;
+    order: 2;
+    min-height: 44px;
+    font-size: 14px;
+  }
+}

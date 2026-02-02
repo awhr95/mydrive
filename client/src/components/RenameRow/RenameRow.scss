@@ -1,0 +1,62 @@
+@use "../../styles/variables" as *;
+
+.dashboard__rename-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.dashboard__rename-input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 8px;
+  border: 1px solid $primary;
+  border-radius: $radius-sm;
+  font-size: 14px;
+  font-weight: 500;
+  color: $gray-800;
+  outline: none;
+  background: $white;
+}
+
+.dashboard__rename-save,
+.dashboard__rename-cancel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: $radius-sm;
+  background: none;
+  cursor: pointer;
+  font-size: 15px;
+  flex-shrink: 0;
+  transition: background $transition-fast;
+}
+
+.dashboard__rename-save {
+  color: $green;
+
+  &:hover {
+    background: $green-light;
+  }
+}
+
+.dashboard__rename-cancel {
+  color: $red;
+
+  &:hover {
+    background: $red-light;
+  }
+}
+
+@media (max-width: #{$bp-mobile - 1}) {
+  .dashboard__rename-save,
+  .dashboard__rename-cancel {
+    width: 36px;
+    height: 36px;
+    font-size: 17px;
+  }
+}

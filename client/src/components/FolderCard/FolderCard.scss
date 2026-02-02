@@ -1,0 +1,13 @@
+@use "../../styles/variables" as *;
+
+.dashboard__card--folder {
+  cursor: pointer;
+
+  .dashboard__card-icon {
+    color: #f59e0b;
+  }
+
+  &:hover {
+    border-color: #fbbf24;
+  }
+}

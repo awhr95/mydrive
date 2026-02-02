@@ -1,0 +1,88 @@
+@use "../../styles/variables" as *;
+
+.dashboard__card {
+  display: flex;
+  flex-direction: column;
+  background: $white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-md;
+  padding: 20px;
+  transition: box-shadow $transition-fast, border-color $transition-fast;
+
+  &:hover {
+    border-color: $gray-300;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.dashboard__card-icon {
+  font-size: 32px;
+  color: $primary;
+  margin-bottom: 14px;
+}
+
+.dashboard__card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard__card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: $gray-800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 6px;
+}
+
+.dashboard__card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.dashboard__card-date {
+  font-size: 12px;
+  color: $gray-400;
+}
+
+.dashboard__card-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid $gray-100;
+}
+
+@media (max-width: #{$bp-tablet - 1}) {
+  .dashboard__card {
+    padding: 16px;
+  }
+
+  .dashboard__card-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: #{$bp-mobile - 1}) {
+  .dashboard__card {
+    padding: 14px;
+  }
+
+  .dashboard__card-icon {
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+
+  .dashboard__card-name {
+    font-size: 13px;
+  }
+
+  .dashboard__card-actions {
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+}
