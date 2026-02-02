@@ -120,3 +120,29 @@
   background: $gray-200;
   margin: 6px 0;
 }
+
+@media (max-width: #{$bp-mobile - 1}) {
+  .header__inner {
+    padding: 0 16px;
+  }
+
+  .header__title {
+    font-size: 17px;
+  }
+
+  .header__icon {
+    font-size: 20px;
+  }
+
+  .header__avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 14px;
+  }
+
+  .header__profile-btn {
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+  }
+}

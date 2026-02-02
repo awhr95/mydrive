@@ -44,3 +44,9 @@ input {
   margin: 0 auto;
   padding: 0 24px;
 }
+
+@media (max-width: #{$bp-mobile - 1}) {
+  .container {
+    padding: 0 16px;
+  }
+}

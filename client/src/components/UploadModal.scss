@@ -181,3 +181,20 @@
   font-size: 13px;
   text-align: center;
 }
+
+@media (max-width: #{$bp-mobile - 1}) {
+  .upload-popover {
+    width: calc(100vw - 32px);
+    max-width: 360px;
+    right: -8px;
+    padding: 20px;
+  }
+
+  .upload-popover__dropzone {
+    padding: 24px 16px;
+  }
+
+  .upload-popover__upload-btn {
+    min-height: 44px;
+  }
+}

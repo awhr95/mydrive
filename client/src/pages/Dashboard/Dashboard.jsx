@@ -19,6 +19,8 @@ import {
   FiEdit2,
   FiCheck,
   FiX,
+  FiGrid,
+  FiList,
 } from "react-icons/fi";
 
 const getDisplayName = (file) => file.display_name || file.filename;
@@ -50,6 +52,44 @@ const formatDate = (dateStr) => {
   });
 };
 
+const getDefaultView = () => {
+  const saved = localStorage.getItem("mydrive-view-mode");
+  if (saved === "grid" || saved === "list") return saved;
+  return window.innerWidth < 768 ? "list" : "grid";
+};
+
+const RenameRow = ({ fileId, value, onChange, onSave, onCancel, stopProp }) => (
+  <span
+    className="dashboard__rename-row"
+    onClick={stopProp ? (e) => e.stopPropagation() : undefined}
+  >
+    <input
+      className="dashboard__rename-input"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") onSave(fileId);
+        if (e.key === "Escape") onCancel();
+      }}
+      autoFocus
+    />
+    <button
+      className="dashboard__rename-save"
+      onClick={() => onSave(fileId)}
+      title="Save"
+    >
+      <FiCheck />
+    </button>
+    <button
+      className="dashboard__rename-cancel"
+      onClick={() => onCancel()}
+      title="Cancel"
+    >
+      <FiX />
+    </button>
+  </span>
+);
+
 const Dashboard = () => {
   const [files, setFiles] = useState([]);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -61,6 +101,7 @@ const Dashboard = () => {
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [renamingId, setRenamingId] = useState(null);
   const [renameValue, setRenameValue] = useState("");
+  const [viewMode, setViewMode] = useState(getDefaultView);
   const uploadWrapperRef = useRef(null);
   const { token, logout } = useAuth();
   const navigate = useNavigate();
@@ -68,6 +109,11 @@ const Dashboard = () => {
   const handleAuthError = () => {
     logout();
     navigate("/login");
+  };
+
+  const toggleViewMode = (mode) => {
+    setViewMode(mode);
+    localStorage.setItem("mydrive-view-mode", mode);
   };
 
   const fetchFiles = useCallback(async () => {
@@ -243,6 +289,13 @@ const Dashboard = () => {
     subtitleParts.push(`${fileCount} ${fileCount === 1 ? "file" : "files"}`);
   const subtitle = subtitleParts.length > 0 ? subtitleParts.join(", ") : "No items";
 
+  const renameProps = {
+    value: renameValue,
+    onChange: setRenameValue,
+    onSave: handleRename,
+    onCancel: () => setRenamingId(null),
+  };
+
   return (
     <div className="dashboard">
       <div className="dashboard__welcome">
@@ -251,6 +304,22 @@ const Dashboard = () => {
           <p className="dashboard__subtitle">{subtitle}</p>
         </div>
         <div className="dashboard__actions">
+          <div className="dashboard__view-toggle">
+            <button
+              className={`dashboard__view-toggle-btn${viewMode === "list" ? " dashboard__view-toggle-btn--active" : ""}`}
+              onClick={() => toggleViewMode("list")}
+              title="List view"
+            >
+              <FiList />
+            </button>
+            <button
+              className={`dashboard__view-toggle-btn${viewMode === "grid" ? " dashboard__view-toggle-btn--active" : ""}`}
+              onClick={() => toggleViewMode("grid")}
+              title="Grid view"
+            >
+              <FiGrid />
+            </button>
+          </div>
           <button
             className="dashboard__new-folder-btn"
             onClick={() => {
@@ -259,7 +328,7 @@ const Dashboard = () => {
             }}
           >
             <FiPlus />
-            New Folder
+            <span className="dashboard__btn-label">New Folder</span>
           </button>
           <div className="dashboard__upload-wrapper" ref={uploadWrapperRef}>
             <button
@@ -267,7 +336,7 @@ const Dashboard = () => {
               onClick={() => setShowUploadModal((prev) => !prev)}
             >
               <FiUploadCloud />
-              Upload File
+              <span className="dashboard__btn-label">Upload</span>
             </button>
             <UploadModal
               isOpen={showUploadModal}
@@ -289,7 +358,7 @@ const Dashboard = () => {
             Home
           </button>
           {breadcrumbPath.map((crumb) => (
-            <span key={crumb.id} style={{ display: "flex", alignItems: "center" }}>
+            <span key={crumb.id} className="dashboard__breadcrumb-segment">
               <FiChevronRight className="dashboard__breadcrumb-sep" />
               <button
                 className="dashboard__breadcrumb-item"
@@ -304,7 +373,7 @@ const Dashboard = () => {
 
       {showNewFolder && (
         <div className="dashboard__new-folder-form">
-          <FiFolder style={{ fontSize: 18, color: "#f59e0b" }} />
+          <FiFolder style={{ fontSize: 18, color: "#f59e0b", flexShrink: 0 }} />
           <input
             className="dashboard__new-folder-input"
             type="text"
@@ -350,7 +419,8 @@ const Dashboard = () => {
             Upload your first file
           </button>
         </div>
-      ) : (
+      ) : viewMode === "list" ? (
+        /* ===== LIST VIEW ===== */
         <div className="dashboard__table">
           <div className="dashboard__table-header">
             <span className="dashboard__col-icon" />
@@ -372,32 +442,7 @@ const Dashboard = () => {
                 </span>
                 <span className="dashboard__col-name dashboard__file-name">
                   {renamingId === file.id ? (
-                    <span className="dashboard__rename-row" onClick={(e) => e.stopPropagation()}>
-                      <input
-                        className="dashboard__rename-input"
-                        value={renameValue}
-                        onChange={(e) => setRenameValue(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") handleRename(file.id);
-                          if (e.key === "Escape") setRenamingId(null);
-                        }}
-                        autoFocus
-                      />
-                      <button
-                        className="dashboard__rename-save"
-                        onClick={() => handleRename(file.id)}
-                        title="Save"
-                      >
-                        <FiCheck />
-                      </button>
-                      <button
-                        className="dashboard__rename-cancel"
-                        onClick={() => setRenamingId(null)}
-                        title="Cancel"
-                      >
-                        <FiX />
-                      </button>
-                    </span>
+                    <RenameRow fileId={file.id} {...renameProps} stopProp />
                   ) : (
                     file.filename
                   )}
@@ -439,32 +484,7 @@ const Dashboard = () => {
                 </span>
                 <span className="dashboard__col-name dashboard__file-name">
                   {renamingId === file.id ? (
-                    <span className="dashboard__rename-row">
-                      <input
-                        className="dashboard__rename-input"
-                        value={renameValue}
-                        onChange={(e) => setRenameValue(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") handleRename(file.id);
-                          if (e.key === "Escape") setRenamingId(null);
-                        }}
-                        autoFocus
-                      />
-                      <button
-                        className="dashboard__rename-save"
-                        onClick={() => handleRename(file.id)}
-                        title="Save"
-                      >
-                        <FiCheck />
-                      </button>
-                      <button
-                        className="dashboard__rename-cancel"
-                        onClick={() => setRenamingId(null)}
-                        title="Cancel"
-                      >
-                        <FiX />
-                      </button>
-                    </span>
+                    <RenameRow fileId={file.id} {...renameProps} />
                   ) : (
                     getDisplayName(file)
                   )}
@@ -505,8 +525,104 @@ const Dashboard = () => {
             )
           )}
         </div>
+      ) : (
+        /* ===== GRID VIEW ===== */
+        <div className="dashboard__grid">
+          {files.map((file) =>
+            file.type === "folder" ? (
+              <div
+                key={file.id}
+                className="dashboard__card dashboard__card--folder"
+                onClick={() => handleFolderClick(file.id)}
+              >
+                <div className="dashboard__card-icon">
+                  <FiFolder />
+                </div>
+                <div className="dashboard__card-body">
+                  <div className="dashboard__card-name">
+                    {renamingId === file.id ? (
+                      <RenameRow fileId={file.id} {...renameProps} stopProp />
+                    ) : (
+                      file.filename
+                    )}
+                  </div>
+                  <div className="dashboard__card-date">
+                    {formatDate(file.created_at)}
+                  </div>
+                </div>
+                <div className="dashboard__card-actions">
+                  <button
+                    className="dashboard__action-btn dashboard__action-btn--rename"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleStartRename(file);
+                    }}
+                    title="Rename"
+                  >
+                    <FiEdit2 />
+                  </button>
+                  <button
+                    className="dashboard__action-btn dashboard__action-btn--delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(file.id);
+                    }}
+                    title="Delete"
+                  >
+                    <FiTrash2 />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div key={file.id} className="dashboard__card">
+                <div className="dashboard__card-icon">
+                  {getFileIcon(getDisplayName(file))}
+                </div>
+                <div className="dashboard__card-body">
+                  <div className="dashboard__card-name">
+                    {renamingId === file.id ? (
+                      <RenameRow fileId={file.id} {...renameProps} />
+                    ) : (
+                      getDisplayName(file)
+                    )}
+                  </div>
+                  <div className="dashboard__card-meta">
+                    <span className="dashboard__type-badge">
+                      {getFileType(getDisplayName(file))}
+                    </span>
+                    <span className="dashboard__card-date">
+                      {formatDate(file.created_at)}
+                    </span>
+                  </div>
+                </div>
+                <div className="dashboard__card-actions">
+                  <button
+                    className="dashboard__action-btn dashboard__action-btn--download"
+                    onClick={() => handleDownload(file.filename, getDisplayName(file))}
+                    title="Download"
+                  >
+                    <FiDownload />
+                  </button>
+                  <button
+                    className="dashboard__action-btn dashboard__action-btn--rename"
+                    onClick={() => handleStartRename(file)}
+                    title="Rename"
+                  >
+                    <FiEdit2 />
+                  </button>
+                  <button
+                    className="dashboard__action-btn dashboard__action-btn--delete"
+                    onClick={() => handleDelete(file.id)}
+                    title="Delete"
+                  >
+                    <FiTrash2 />
+                  </button>
+                </div>
+              </div>
+            )
+          )}
+        </div>
       )}
-
     </div>
   );
 };
