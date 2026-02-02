@@ -93,18 +93,13 @@ const Dashboard = () => {
     }
   }, [showUploadModal]);
 
-  const handleDownload = async (diskFilename, displayName) => {
+  const handleDownload = async (diskFilename) => {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/files/download/${diskFilename}`,
-        { headers: { Authorization: `Bearer ${token}` }, responseType: "blob" }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      const url = window.URL.createObjectURL(response.data);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = displayName;
-      a.click();
-      window.URL.revokeObjectURL(url);
+      window.location.href = response.data.url;
     } catch (error) {
       if (error.response?.status === 401) handleAuthError();
     }

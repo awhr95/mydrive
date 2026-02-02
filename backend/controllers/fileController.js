@@ -1,22 +1,31 @@
 const db = require("../db");
-const path = require("path");
-const fs = require("fs");
 const multer = require("multer");
+const {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+} = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
-const uploadDir = path.join(__dirname, "../uploads");
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+
+const bucket = process.env.S3_BUCKET_NAME;
 
 const maxFileSizeMB = parseInt(process.env.MAX_FILE_SIZE_MB, 10) || 50;
 const maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: maxFileSizeBytes },
 });
-const upload = multer({ storage, limits: { fileSize: maxFileSizeBytes } });
 
 const handleUpload = (req, res, next) => {
   upload.single("file")(req, res, (err) => {
@@ -33,9 +42,11 @@ const handleUpload = (req, res, next) => {
 };
 
 const uploadFile = async (req, res) => {
-  const { filename, originalname } = req.file;
+  const { originalname, buffer, mimetype } = req.file;
   const userId = req.user.id;
   const parentId = req.body.parent_id || null;
+  const filename = `${Date.now()}-${originalname}`;
+  const s3Key = `uploads/${userId}/${filename}`;
 
   try {
     if (parentId) {
@@ -47,6 +58,15 @@ const uploadFile = async (req, res) => {
       }
     }
 
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: s3Key,
+        Body: buffer,
+        ContentType: mimetype,
+      })
+    );
+
     await db("files").insert({
       filename,
       display_name: originalname,
@@ -54,6 +74,7 @@ const uploadFile = async (req, res) => {
       type: "file",
       parent_id: parentId,
     });
+
     res.status(200).send("File uploaded successfully");
   } catch (error) {
     console.error("Error uploading file:", error);
@@ -70,8 +91,17 @@ const downloadFile = async (req, res) => {
     if (!file) {
       return res.status(404).send("File not found");
     }
-    const filePath = path.join(uploadDir, file.filename);
-    res.download(filePath, file.display_name || file.filename);
+
+    const displayName = file.display_name || file.filename;
+    const s3Key = `uploads/${userId}/${file.filename}`;
+    const command = new GetObjectCommand({
+      Bucket: bucket,
+      Key: s3Key,
+      ResponseContentDisposition: `attachment; filename="${encodeURIComponent(displayName)}"`,
+    });
+    const url = await getSignedUrl(s3, command, { expiresIn: 300 });
+
+    res.status(200).json({ url, filename: displayName });
   } catch (error) {
     console.error("Error downloading file:", error);
     res.status(500).send("Error downloading file");
@@ -197,7 +227,6 @@ const renameFile = async (req, res) => {
     }
 
     if (file.type === "folder") {
-      // Check for duplicate folder name in same parent
       const dupQuery = db("files")
         .where({
           filename: name.trim(),
@@ -233,7 +262,8 @@ const renameFile = async (req, res) => {
   }
 };
 
-const deleteChildFilesFromDisk = async (folderId, userId) => {
+const collectChildS3Keys = async (folderId, userId) => {
+  const keys = [];
   const children = await db("files").where({
     parent_id: folderId,
     user_id: userId,
@@ -241,12 +271,13 @@ const deleteChildFilesFromDisk = async (folderId, userId) => {
 
   for (const child of children) {
     if (child.type === "folder") {
-      await deleteChildFilesFromDisk(child.id, userId);
+      const childKeys = await collectChildS3Keys(child.id, userId);
+      keys.push(...childKeys);
     } else {
-      const filePath = path.join(uploadDir, child.filename);
-      await fs.promises.unlink(filePath).catch(() => {});
+      keys.push(`uploads/${userId}/${child.filename}`);
     }
   }
+  return keys;
 };
 
 const deleteFile = async (req, res) => {
@@ -260,10 +291,24 @@ const deleteFile = async (req, res) => {
     }
 
     if (file.type === "folder") {
-      await deleteChildFilesFromDisk(file.id, userId);
+      const keys = await collectChildS3Keys(file.id, userId);
+      if (keys.length > 0) {
+        await s3
+          .send(
+            new DeleteObjectsCommand({
+              Bucket: bucket,
+              Delete: { Objects: keys.map((Key) => ({ Key })) },
+            })
+          )
+          .catch((err) =>
+            console.error("Error deleting child files from S3:", err)
+          );
+      }
     } else {
-      const filePath = path.join(uploadDir, file.filename);
-      await fs.promises.unlink(filePath).catch(() => {});
+      const s3Key = `uploads/${userId}/${file.filename}`;
+      await s3
+        .send(new DeleteObjectCommand({ Bucket: bucket, Key: s3Key }))
+        .catch((err) => console.error("Error deleting file from S3:", err));
     }
 
     await db("files").where({ id, user_id: userId }).del();
