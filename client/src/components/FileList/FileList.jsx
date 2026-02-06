@@ -1,5 +1,5 @@
 import "./FileList.scss";
-import { FiFolder, FiLoader } from "react-icons/fi";
+import { FiFolder } from "react-icons/fi";
 import FileRow from "../FileRow/FileRow";
 import FolderRow from "../FolderRow/FolderRow";
 import FileCard from "../FileCard/FileCard";
@@ -11,22 +11,14 @@ const FileList = ({
   loading,
   renamingId,
   renameProps,
+  clickedFolderId,
   onFolderClick,
   onDownload,
   onStartRename,
   onDelete,
   onUploadClick,
 }) => {
-  if (loading) {
-    return (
-      <div className="dashboard__loading">
-        <FiLoader className="dashboard__loading-spinner" />
-        <p className="dashboard__loading-text">Loading files...</p>
-      </div>
-    );
-  }
-
-  if (files.length === 0) {
+  if (!loading && files.length === 0) {
     return (
       <div className="dashboard__empty">
         <FiFolder className="dashboard__empty-icon" />
@@ -55,6 +47,7 @@ const FileList = ({
               key={file.id}
               folder={file}
               isRenaming={renamingId === file.id}
+              isClicked={clickedFolderId === file.id}
               renameProps={renameProps}
               onClick={onFolderClick}
               onStartRename={onStartRename}
@@ -84,6 +77,7 @@ const FileList = ({
             key={file.id}
             folder={file}
             isRenaming={renamingId === file.id}
+            isClicked={clickedFolderId === file.id}
             renameProps={renameProps}
             onClick={onFolderClick}
             onStartRename={onStartRename}

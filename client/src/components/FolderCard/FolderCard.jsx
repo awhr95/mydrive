@@ -3,9 +3,9 @@ import { FiFolder, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { formatDate } from "../../utils/fileUtils";
 import RenameRow from "../RenameRow/RenameRow";
 
-const FolderCard = ({ folder, isRenaming, renameProps, onClick, onStartRename, onDelete }) => (
+const FolderCard = ({ folder, isRenaming, isClicked, renameProps, onClick, onStartRename, onDelete }) => (
   <div
-    className="dashboard__card dashboard__card--folder"
+    className={`dashboard__card dashboard__card--folder${isClicked ? " dashboard__card--clicked" : ""}`}
     onClick={() => onClick(folder.id)}
   >
     <div className="dashboard__card-icon">

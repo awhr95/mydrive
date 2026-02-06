@@ -33,6 +33,7 @@ const Dashboard = () => {
   const [renameValue, setRenameValue] = useState("");
   const [viewMode, setViewMode] = useState(getDefaultView);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [clickedFolderId, setClickedFolderId] = useState(null);
   const uploadWrapperRef = useRef(null);
   const { token, logout } = useAuth();
   const navigate = useNavigate();
@@ -134,6 +135,14 @@ const Dashboard = () => {
 
   const handleDeleteCancel = () => {
     setDeleteTarget(null);
+  };
+
+  const handleFolderClick = (folderId) => {
+    setClickedFolderId(folderId);
+    setTimeout(() => {
+      setCurrentFolderId(folderId);
+      setClickedFolderId(null);
+    }, 250);
   };
 
   const handleCreateFolder = async () => {
@@ -275,7 +284,8 @@ const Dashboard = () => {
         loading={loading}
         renamingId={renamingId}
         renameProps={renameProps}
-        onFolderClick={setCurrentFolderId}
+        clickedFolderId={clickedFolderId}
+        onFolderClick={handleFolderClick}
         onDownload={handleDownload}
         onStartRename={handleStartRename}
         onDelete={handleDeleteClick}
