@@ -19,6 +19,7 @@ const getDefaultView = () => {
 
 const Dashboard = () => {
   const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [flipUp, setFlipUp] = useState(false);
   const [currentFolderId, setCurrentFolderId] = useState(null);
@@ -26,6 +27,7 @@ const Dashboard = () => {
   const [showNewFolder, setShowNewFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [creatingFolder, setCreatingFolder] = useState(false);
+  const [folderError, setFolderError] = useState("");
   const [renamingId, setRenamingId] = useState(null);
   const [renameValue, setRenameValue] = useState("");
   const [viewMode, setViewMode] = useState(getDefaultView);
@@ -44,6 +46,7 @@ const Dashboard = () => {
   };
 
   const fetchFiles = useCallback(async () => {
+    setLoading(true);
     try {
       const params = currentFolderId ? `?parent_id=${currentFolderId}` : "";
       const response = await axios.get(
@@ -53,6 +56,8 @@ const Dashboard = () => {
       setFiles(response.data);
     } catch (error) {
       if (error.response?.status === 401) handleAuthError();
+    } finally {
+      setLoading(false);
     }
   }, [token, currentFolderId]);
 
@@ -106,30 +111,58 @@ const Dashboard = () => {
   };
 
   const handleDelete = async (id) => {
+    const originalFiles = files;
+    setFiles(files.filter((file) => file.id !== id));
     try {
       await axios.delete(`${import.meta.env.VITE_API_URL}/files/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setFiles(files.filter((file) => file.id !== id));
     } catch (error) {
+      setFiles(originalFiles);
       if (error.response?.status === 401) handleAuthError();
     }
   };
 
   const handleCreateFolder = async () => {
     if (!newFolderName.trim() || creatingFolder) return;
+
+    const tempId = `temp-${Date.now()}`;
+    const optimisticFolder = {
+      id: tempId,
+      filename: newFolderName.trim(),
+      type: "folder",
+      parent_id: currentFolderId,
+      created_at: new Date().toISOString(),
+    };
+
+    setFiles((prev) => [optimisticFolder, ...prev]);
+    setNewFolderName("");
+    setShowNewFolder(false);
+    setFolderError("");
     setCreatingFolder(true);
+
     try {
-      await axios.post(
+      const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/files/folders`,
-        { name: newFolderName.trim(), parent_id: currentFolderId },
+        { name: optimisticFolder.filename, parent_id: currentFolderId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setNewFolderName("");
-      setShowNewFolder(false);
-      fetchFiles();
+      setFiles((prev) =>
+        prev.map((f) => (f.id === tempId ? { ...f, id: response.data.id } : f))
+      );
     } catch (error) {
-      if (error.response?.status === 401) handleAuthError();
+      setFiles((prev) => prev.filter((f) => f.id !== tempId));
+      if (error.response?.status === 401) {
+        handleAuthError();
+      } else if (error.response?.status === 409) {
+        setFolderError("A folder with that name already exists");
+        setShowNewFolder(true);
+        setNewFolderName(optimisticFolder.filename);
+      } else {
+        setFolderError("Failed to create folder");
+        setShowNewFolder(true);
+        setNewFolderName(optimisticFolder.filename);
+      }
     } finally {
       setCreatingFolder(false);
     }
@@ -164,7 +197,7 @@ const Dashboard = () => {
   const subtitleParts = [];
   if (folderCount > 0) subtitleParts.push(`${folderCount} ${folderCount === 1 ? "folder" : "folders"}`);
   if (fileCount > 0) subtitleParts.push(`${fileCount} ${fileCount === 1 ? "file" : "files"}`);
-  const subtitle = subtitleParts.length > 0 ? subtitleParts.join(", ") : "No items";
+  const subtitle = loading ? "Loading..." : (subtitleParts.length > 0 ? subtitleParts.join(", ") : "No items");
 
   const renameProps = {
     value: renameValue,
@@ -184,7 +217,7 @@ const Dashboard = () => {
           <ViewToggle viewMode={viewMode} onViewChange={toggleViewMode} />
           <button
             className="dashboard__new-folder-btn"
-            onClick={() => { setShowNewFolder((prev) => !prev); setNewFolderName(""); }}
+            onClick={() => { setShowNewFolder((prev) => !prev); setNewFolderName(""); setFolderError(""); }}
           >
             <FiPlus />
             <span className="dashboard__btn-label">New Folder</span>
@@ -217,14 +250,16 @@ const Dashboard = () => {
           name={newFolderName}
           onChange={setNewFolderName}
           onSubmit={handleCreateFolder}
-          onCancel={() => { setShowNewFolder(false); setNewFolderName(""); }}
+          onCancel={() => { setShowNewFolder(false); setNewFolderName(""); setFolderError(""); }}
           creating={creatingFolder}
+          error={folderError}
         />
       )}
 
       <FileList
         files={files}
         viewMode={viewMode}
+        loading={loading}
         renamingId={renamingId}
         renameProps={renameProps}
         onFolderClick={setCurrentFolderId}
