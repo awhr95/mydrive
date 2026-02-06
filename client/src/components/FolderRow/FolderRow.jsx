@@ -38,7 +38,7 @@ const FolderRow = ({ folder, isRenaming, renameProps, onClick, onStartRename, on
         className="dashboard__action-btn dashboard__action-btn--delete"
         onClick={(e) => {
           e.stopPropagation();
-          onDelete(folder.id);
+          onDelete(folder);
         }}
         title="Delete"
       >

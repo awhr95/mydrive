@@ -10,6 +10,7 @@ import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import ViewToggle from "../../components/ViewToggle/ViewToggle";
 import NewFolderForm from "../../components/NewFolderForm/NewFolderForm";
 import FileList from "../../components/FileList/FileList";
+import ConfirmDialog from "../../components/ConfirmDialog/ConfirmDialog";
 
 const getDefaultView = () => {
   const saved = localStorage.getItem("mydrive-view-mode");
@@ -31,6 +32,7 @@ const Dashboard = () => {
   const [renamingId, setRenamingId] = useState(null);
   const [renameValue, setRenameValue] = useState("");
   const [viewMode, setViewMode] = useState(getDefaultView);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const uploadWrapperRef = useRef(null);
   const { token, logout } = useAuth();
   const navigate = useNavigate();
@@ -110,9 +112,16 @@ const Dashboard = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDeleteClick = (file) => {
+    setDeleteTarget(file);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    const id = deleteTarget.id;
     const originalFiles = files;
     setFiles(files.filter((file) => file.id !== id));
+    setDeleteTarget(null);
     try {
       await axios.delete(`${import.meta.env.VITE_API_URL}/files/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -121,6 +130,10 @@ const Dashboard = () => {
       setFiles(originalFiles);
       if (error.response?.status === 401) handleAuthError();
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteTarget(null);
   };
 
   const handleCreateFolder = async () => {
@@ -265,8 +278,23 @@ const Dashboard = () => {
         onFolderClick={setCurrentFolderId}
         onDownload={handleDownload}
         onStartRename={handleStartRename}
-        onDelete={handleDelete}
+        onDelete={handleDeleteClick}
         onUploadClick={() => setShowUploadModal(true)}
+      />
+
+      <ConfirmDialog
+        isOpen={!!deleteTarget}
+        title={deleteTarget?.type === "folder" ? "Delete folder?" : "Delete file?"}
+        message={
+          deleteTarget?.type === "folder"
+            ? `"${getDisplayName(deleteTarget)}" and all its contents will be permanently deleted.`
+            : `"${deleteTarget ? getDisplayName(deleteTarget) : ""}" will be permanently deleted.`
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+        danger
       />
     </div>
   );

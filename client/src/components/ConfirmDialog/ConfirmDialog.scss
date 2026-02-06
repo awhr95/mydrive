@@ -1,0 +1,109 @@
+@use "sass:color";
+@use "../../styles/variables" as *;
+
+.confirm-dialog__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.confirm-dialog {
+  background: $white;
+  border-radius: $radius-lg;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: $shadow-lg;
+}
+
+.confirm-dialog__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: $gray-100;
+  color: $gray-500;
+  font-size: 24px;
+  margin-bottom: 16px;
+
+  &--danger {
+    background: $red-light;
+    color: $red;
+  }
+}
+
+.confirm-dialog__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: $gray-900;
+  margin: 0 0 8px;
+}
+
+.confirm-dialog__message {
+  font-size: 14px;
+  color: $gray-500;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  gap: 12px;
+}
+
+.confirm-dialog__btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: $radius-sm;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &--cancel {
+    background: $white;
+    color: $gray-700;
+    border: 1px solid $gray-300;
+
+    &:hover {
+      background: $gray-50;
+      border-color: $gray-400;
+    }
+  }
+
+  &--confirm {
+    background: $primary;
+    color: $white;
+    border: none;
+
+    &:hover {
+      background: $primary-dark;
+    }
+  }
+
+  &--danger {
+    background: $red;
+
+    &:hover {
+      background: color.adjust($red, $lightness: -8%);
+    }
+  }
+}
+
+@media (max-width: #{$bp-mobile - 1}) {
+  .confirm-dialog {
+    padding: 20px;
+  }
+
+  .confirm-dialog__btn {
+    min-height: 44px;
+  }
+}

@@ -40,7 +40,7 @@ const FileRow = ({ file, isRenaming, renameProps, onDownload, onStartRename, onD
         </button>
         <button
           className="dashboard__action-btn dashboard__action-btn--delete"
-          onClick={() => onDelete(file.id)}
+          onClick={() => onDelete(file)}
           title="Delete"
         >
           <FiTrash2 />
