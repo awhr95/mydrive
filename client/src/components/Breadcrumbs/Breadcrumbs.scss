@@ -30,7 +30,7 @@
     background: $primary-light;
   }
 
-  &:last-child {
+  &--current {
     color: $gray-500;
     cursor: default;
 

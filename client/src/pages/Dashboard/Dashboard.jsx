@@ -263,9 +263,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {currentFolderId && (
-        <Breadcrumbs path={breadcrumbPath} onNavigate={setCurrentFolderId} />
-      )}
+      <Breadcrumbs path={breadcrumbPath} onNavigate={setCurrentFolderId} />
 
       {showNewFolder && (
         <NewFolderForm
